@@ -1,14 +1,11 @@
 {
-  "name": "ie_hw4_package",
+  "name": "package",
   "version": "1.0.0",
-  "description": "",
+  "description": "HW4_IE",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^4.18.2"
-  }
+  "author": "Leila Erfanirad",
+  "license": "ISC"
 }
