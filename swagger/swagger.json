@@ -1,0 +1,83 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Clothes Management API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/add-clothes": {
+      "post": {
+        "summary": "Add clothes",
+        "responses": {
+          "200": {
+            "description": "Clothes added successfully"
+          }
+        }
+      }
+    },
+    "/get-clothes/{id}": {
+      "get": {
+        "summary": "Get clothes by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Clothes retrieved successfully"
+          }
+        }
+      }
+    },
+    "/delete-all-clothes": {
+      "delete": {
+        "summary": "Delete all clothes",
+        "responses": {
+          "200": {
+            "description": "All clothes deleted successfully"
+          }
+        }
+      }
+    },
+    "/edit-clothes/{id}": {
+      "put": {
+        "summary": "Edit clothes by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Clothes edited successfully"
+          }
+        }
+      }
+    },
+    "/get-final-price/{id}": {
+      "get": {
+        "summary": "Get final price by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Final price retrieved successfully"
+          }
+        }
+      }
+    }
+  }
+}
