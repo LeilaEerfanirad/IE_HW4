@@ -1,6 +1,13 @@
 const mongoose = require('mongoose');
 
 const clothesSchema = new mongoose.Schema({
+  id: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: function () {
+      return new mongoose.Types.ObjectId()
+    },
+    unique: true
+  },
   name: {
     type: String,
     required: true
