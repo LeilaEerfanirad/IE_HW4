@@ -5,10 +5,8 @@ const cors = require('cors');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const db = require('./database')
-// Load environment variables from .env file
 require('dotenv').config();
 
-// Connect to MongoDB
 mongoose.connect(process.env.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log('Connected to the database');
@@ -17,18 +15,18 @@ mongoose.connect(process.env.DB_URL, { useNewUrlParser: true, useUnifiedTopology
     console.error('Error connecting to the database:', err.message);
   });
 
-// Middleware
 app.use(cors());
 app.use(morgan('tiny'));
 app.use(bodyParser.json());
 
-// Routes
-const clothesRouter = require('./routes/clothes');
-app.use('/clothes', clothesRouter);
+
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
+// Routes
+const clothesRouter = require('./routes/clothes');
+app.use('/clothes', clothesRouter);
 
 app.post('/signup', async (req, res) => {
     const data = req.body;
@@ -59,8 +57,6 @@ app.post('/login', async (req, res) => {
 
     res.status(200).send(token);
 });
-
-
 
 const port = process.env.PORT || 3000;
 
