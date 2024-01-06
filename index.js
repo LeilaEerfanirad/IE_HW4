@@ -1,10 +1,11 @@
 const express = require('express');
 const app = express();
+const router = express().router();
 const mongoose = require('mongoose');
 const cors = require('cors');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-
+const db = require('./database')
 // Load environment variables from .env file
 require('dotenv').config();
 
@@ -60,95 +61,9 @@ app.post('/login', async (req, res) => {
     res.status(200).send(token);
 });
 
-const Clothes = require('./models/clothes'); // اضافه کردن مدل لباس
 
-// Example routes for managing clothes (CRUD operations)
-app.post('/add-clothes', authenticateToken, async (req, res) => {
-  const data = req.body;
 
-  try {
-    // Create a new clothes document in the database
-    const newClothes = new Clothes(data);
-    const savedClothes = await newClothes.save();
-
-    res.json({ message: 'Clothes added successfully', clothes: savedClothes });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
-  }
-});
-
-app.get('/get-clothes/:id', authenticateToken, async (req, res) => {
-  const clothesId = req.params.id;
-
-  try {
-    // Find clothes by ID in the database
-    const clothes = await Clothes.findById(clothesId);
-
-    if (!clothes) {
-      return res.status(404).json({ message: 'Clothes not found' });
-    }
-
-    res.json({ message: 'Clothes retrieved successfully', clothes });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
-  }
-});
-
-app.delete('/delete-all-clothes', authenticateToken, async (req, res) => {
-  try {
-    // Delete all clothes from the database
-    await Clothes.deleteMany({});
-
-    res.json({ message: 'All clothes deleted successfully' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
-  }
-});
-
-app.put('/edit-clothes/:id', authenticateToken, async (req, res) => {
-  const clothesId = req.params.id;
-  const newData = req.body;
-
-  try {
-    // Find and update clothes by ID in the database
-    const updatedClothes = await Clothes.findByIdAndUpdate(clothesId, newData, { new: true });
-
-    if (!updatedClothes) {
-      return res.status(404).json({ message: 'Clothes not found' });
-    }
-
-    res.json({ message: 'Clothes edited successfully', clothes: updatedClothes });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
-  }
-});
-
-app.get('/get-final-price/:id', authenticateToken, async (req, res) => {
-  const clothesId = req.params.id;
-
-  try {
-    // Find clothes by ID in the database
-    const clothes = await Clothes.findById(clothesId);
-
-    if (!clothes) {
-      return res.status(404).json({ message: 'Clothes not found' });
-    }
-
-    // Calculate final price based on discount, if any
-    const finalPrice = clothes.price - (clothes.price * clothes.discount) / 100;
-
-    res.json({ message: 'Final price retrieved successfully', finalPrice });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
-  }
-});
-
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
     console.log(`listening on port ${port}`);

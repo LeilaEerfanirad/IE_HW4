@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const router = express.Router()
 
 module.exports.generateAccessToken = (userData) => {
     return jwt.sign(userData, process.env.TOKEN_SECRET, { expiresIn: '1800s' });

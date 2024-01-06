@@ -1,89 +1,89 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../database'); // Import the MongoDB database connection
+// const db = require('../database'); // Import the MongoDB database connection
 
-// Add clothes
-router.post('/add-clothes', async (req, res) => {
+const Clothes = require('./database/models/clothes'); // اضافه کردن مدل لباس
+
+router.post('/add-clothes', authenticateToken, async (req, res) => {
+  const data = req.body;
+
   try {
-    const { name, material, price, discount } = req.body;
-    const newClothes = new db.Clothes({ name, material, price, discount });
-    const result = await newClothes.save();
-    res.status(201).json(result);
+   
+    const newClothes = new Clothes(data);
+    const savedClothes = await newClothes.save();
+
+    res.json({ message: 'Clothes added successfully', clothes: savedClothes });
   } catch (error) {
     console.error(error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 
-// Get clothes by ID
-router.get('/get-clothes/:id', async (req, res) => {
+router.get('/get-clothes/:id', authenticateToken, async (req, res) => {
+  const clothesId = req.params.id;
+
   try {
-    const clothes = await db.Clothes.findById(req.params.id);
+   
+    const clothes = await Clothes.findById(clothesId);
+
     if (!clothes) {
-      res.status(404).send('Clothes not found');
-      return;
+      return res.status(404).json({ message: 'Clothes not found' });
     }
-    res.status(200).json(clothes);
+
+    res.json({ message: 'Clothes retrieved successfully', clothes });
   } catch (error) {
     console.error(error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 
-// Delete all clothes
-router.delete('/delete-all-clothes', async (req, res) => {
+router.delete('/delete-all-clothes', authenticateToken, async (req, res) => {
   try {
-    const result = await db.Clothes.deleteMany();
-    res.status(200).json(result);
+   
+    await Clothes.deleteMany({});
+
+    res.json({ message: 'All clothes deleted successfully' });
   } catch (error) {
     console.error(error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 
-// Edit clothes by ID
-router.put('/edit-clothes/:id', async (req, res) => {
+router.put('/edit-clothes/:id', authenticateToken, async (req, res) => {
+  const clothesId = req.params.id;
+  const newData = req.body;
+
   try {
-    const { name, material, price, discount } = req.body;
-    const updatedClothes = {
-      name,
-      material,
-      price,
-      discount,
-    };
-    const result = await db.Clothes.findByIdAndUpdate(req.params.id, updatedClothes, { new: true });
-    if (!result) {
-      res.status(404).send('Clothes not found');
-      return;
+    const updatedClothes = await Clothes.findByIdAndUpdate(clothesId, newData, { new: true });
+
+    if (!updatedClothes) {
+      return res.status(404).json({ message: 'Clothes not found' });
     }
-    res.status(200).json(result);
+
+    res.json({ message: 'Clothes edited successfully', clothes: updatedClothes });
   } catch (error) {
     console.error(error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 
-// Get final price by ID
-router.get('/get-final-price/:id', async (req, res) => {
+router.get('/get-final-price/:id', authenticateToken, async (req, res) => {
+  const clothesId = req.params.id;
+
   try {
-    const clothes = await db.Clothes.findById(req.params.id);
+    const clothes = await Clothes.findById(clothesId);
+
     if (!clothes) {
-      res.status(404).send('Clothes not found');
-      return;
+      return res.status(404).json({ message: 'Clothes not found' });
     }
-    const finalPrice = calculateFinalPrice(clothes.price, clothes.discount);
-    res.status(200).json({ finalPrice });
+
+    const finalPrice = clothes.price - (clothes.price * clothes.discount) / 100;
+
+    res.json({ message: 'Final price retrieved successfully', finalPrice });
   } catch (error) {
     console.error(error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 });
-
-// Function to calculate final price with discount
-function calculateFinalPrice(price, discount) {
-  const discountedAmount = (price * discount) / 100;
-  const finalPrice = price - discountedAmount;
-  return finalPrice;
-}
 
 module.exports = router;
