@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const authenticateToken = require('../jwt/index')
 // const db = require('../database'); // Import the MongoDB database connection
 
 const Clothes = require('./database/models/clothes'); // اضافه کردن مدل لباس
@@ -80,6 +81,23 @@ router.get('/get-final-price/:id', authenticateToken, async (req, res) => {
     const finalPrice = clothes.price - (clothes.price * clothes.discount) / 100;
 
     res.json({ message: 'Final price retrieved successfully', finalPrice });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+router.delete('/delete-clothes/:id', authenticateToken, async (req, res) => {
+  const clothesId = req.params.id;
+
+  try {
+    const deletedClothes = await Clothes.findByIdAndDelete(clothesId);
+
+    if (!deletedClothes) {
+      return res.status(404).json({ message: 'Clothes not found' });
+    }
+
+    res.json({ message: 'Clothes deleted successfully', clothes: deletedClothes });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
