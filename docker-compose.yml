@@ -1,23 +1,28 @@
-version: '3'
+version: "3.8"
+
 services:
   mongodb:
-    image: mongo
-    ports:
-      - "27017:27017"
+    image: mongo:latest
+    container_name: mongodb
     volumes:
-      - ./data:/data/db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-
-  app:
-    build:
-      context: .
+      - mongodb:/data/db
+    expose:
+      - 27017
+    networks:
+      - app-db
+  backend:
+    build: ./
+    container_name: api_c
     ports:
-      - "3000:3000"
+      - 3000:3000
+    volumes:
+      - ./:/app
+      - /app/node_modules
     depends_on:
       - mongodb
-    environment:
-      DB_URL: "mongodb://mongodb:27017/mydatabase"
-      TOKEN_SECRET: "mysecrettoken"
-      PORT: 3000
+    networks:
+      - app-db
+volumes:
+  mongodb:
+networks:
+  app-db:
